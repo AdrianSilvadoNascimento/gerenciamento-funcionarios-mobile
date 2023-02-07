@@ -1,0 +1,31 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Empresa {
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  nomeFantasia    String
+  email           String @unique
+  senha           String
+  qtdFuncionarios Int
+
+  funcionarios Funcionario[]
+
+  @@map("empresas")
+}
+
+model Funcionario {
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  nomeFuncionario String
+  telefoneContato String
+
+  empresa   Empresa @relation(fields: [empresaId], references: [id])
+  empresaId String  @db.ObjectId
+
+  @@map("funcionarios")
+}
