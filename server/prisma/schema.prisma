@@ -9,10 +9,10 @@ generator client {
 
 model Empresa {
   id              String @id @default(auto()) @map("_id") @db.ObjectId
-  nomeFantasia    String
+  nomeFantasia    String @default("")
   email           String @unique
   senha           String
-  qtdFuncionarios Int
+  qtdFuncionarios Int    @default(1)
 
   funcionarios Funcionario[]
 
@@ -21,8 +21,8 @@ model Empresa {
 
 model Funcionario {
   id              String @id @default(auto()) @map("_id") @db.ObjectId
-  nomeFuncionario String
-  telefoneContato String
+  nomeFuncionario String @default("")
+  telefoneContato String @default("")
 
   empresa   Empresa @relation(fields: [empresaId], references: [id])
   empresaId String  @db.ObjectId
