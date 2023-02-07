@@ -82,6 +82,7 @@ class FuncionarioController {
           empresaId: empresaId
         }
       })
+      // const empresaAtualizada = await this.empresaController.atualizarEmpresa(funcionario, empresaId)
       res.status(200).json({ message: 'Funcionário adicionado com sucesso!' })
       await prisma.$disconnect()
     } catch (error) {
