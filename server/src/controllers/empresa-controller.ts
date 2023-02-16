@@ -7,7 +7,11 @@ import jwt from 'jsonwebtoken'
 
 type Funcionario = {
   nomeFuncionario: string
-  telefoneContato: string
+  sobrenomeFuncinoario : string
+  posicaoFuncionario: string,
+  turnoFuncionario: string,
+  horaInicio: Date
+  horaFinal: Date
 }
 
 class EmpresaController {
@@ -76,7 +80,11 @@ class EmpresaController {
         funcionarios: {
           create: {
             nomeFuncionario: funcionario.nomeFuncionario,
-            telefoneContato: funcionario.telefoneContato,
+            sobrenomeFuncionario: funcionario.sobrenomeFuncinoario,
+            posicaoFuncionario: funcionario.posicaoFuncionario,
+            turnoFuncionario: funcionario.turnoFuncionario,
+            horaInicio: funcionario.horaInicio,
+            horaFinal: funcionario.horaFinal,
           }
         }
       }

@@ -20,9 +20,13 @@ model Empresa {
 }
 
 model Funcionario {
-  id              String @id @default(auto()) @map("_id") @db.ObjectId
-  nomeFuncionario String @default("")
-  telefoneContato String @default("")
+  id                   String    @id @default(auto()) @map("_id") @db.ObjectId
+  nomeFuncionario      String    @default("")
+  sobrenomeFuncionario String?   @default("")
+  posicaoFuncionario   String?   @default("")
+  turnoFuncionario     String?   @default("")
+  horaInicio           DateTime? @default(now())
+  horaFinal            DateTime? @default(now())
 
   empresa   Empresa @relation(fields: [empresaId], references: [id])
   empresaId String  @db.ObjectId
