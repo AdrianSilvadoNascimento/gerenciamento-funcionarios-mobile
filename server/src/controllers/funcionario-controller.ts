@@ -3,6 +3,15 @@ import { prisma } from '../lib/prisma'
 import { z } from 'zod'
 import EmpresaController from './empresa-controller'
 
+type Funcionario = {
+  nomeFuncionario: string
+  sobrenomeFuncinoario : string
+  posicaoFuncionario: string,
+  turnoFuncionario: string,
+  horaInicio: Date
+  horaFinal: Date
+}
+
 class FuncionarioController {
   public path: string = '/cadastro/:id'
   public router: Router = Router()
@@ -13,7 +22,7 @@ class FuncionarioController {
   }
 
   private initializeRoutes() {
-    this.router.get('/', this.getFuncionarios)
+    this.router.get('/:id', this.getFuncionarios)
     this.router.get('/:id', this.getFuncionario)
     this.router.post(this.path, this.cadastrarFuncionarios)
     this.router.delete('/:id', this.excluirFuncionario)
@@ -22,9 +31,9 @@ class FuncionarioController {
   getFuncionario = async (req: Request, res: Response) => {
     await prisma.$connect()
 
-    const id: string = req.params?.id
-    
     try {
+      const id: string = req.params?.id
+
       const funcionario = await prisma.funcionario.findUnique({
         where: {
           id: id
@@ -53,7 +62,13 @@ class FuncionarioController {
     await prisma.$connect()
 
     try {
-      const funcionarios = await prisma.funcionario.findMany()
+      const empresaId = req.body.empresaId
+
+      const funcionarios = await prisma.funcionario.findMany({
+        where: {
+          id: empresaId
+        }
+      })
       res.status(200).json(funcionarios)
       await prisma.$disconnect()
     } catch (error) {
@@ -66,23 +81,26 @@ class FuncionarioController {
   cadastrarFuncionarios = async (req: Request, res: Response) => {
     await prisma.$connect()
 
-    const createFuncionarioBody = z.object({
-      nomeFuncionario: z.string(),
-      telefoneContato: z.string(),
-    })
-    
-    const { nomeFuncionario, telefoneContato} = createFuncionarioBody.parse(req.body)
-    const empresaId = req.params?.id
-
     try {
-      await prisma.funcionario.create({
-        data: {
-          nomeFuncionario: nomeFuncionario,
-          telefoneContato: telefoneContato,
-          empresaId: empresaId
-        }
+      const data = req.body
+      const empresaId = req.params?.id
+
+      const getDayParam = z.object({
+        horaInicio: z.coerce.date(),
+        horaFinal: z.coerce.date(),
       })
-      // const empresaAtualizada = await this.empresaController.atualizarEmpresa(funcionario, empresaId)
+
+      const { horaInicio, horaFinal } = getDayParam.parse(data)
+      const funcionario: Funcionario = {
+        nomeFuncionario: data.nomeFuncionario,
+        sobrenomeFuncinoario: data.sobrenomeFuncinoario,
+        posicaoFuncionario: data.posicaoFuncionario,
+        turnoFuncionario: data.turnoFuncionario,
+        horaInicio: horaInicio,
+        horaFinal: horaFinal,
+      }
+
+      await this.empresaController.atualizarEmpresa(funcionario, empresaId)
       res.status(200).json({ message: 'Funcionário adicionado com sucesso!' })
       await prisma.$disconnect()
     } catch (error) {
@@ -95,9 +113,9 @@ class FuncionarioController {
   excluirFuncionario = async (req: Request, res: Response) => {
     await prisma.$connect()
 
-    const funcionarioId = req.params?.id
-
     try {
+      const funcionarioId = req.params?.id
+
       const funcionarioDeletado = await prisma.funcionario.findUnique({
         where: {
           id: funcionarioId
