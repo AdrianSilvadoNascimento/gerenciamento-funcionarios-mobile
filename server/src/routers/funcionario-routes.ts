@@ -6,7 +6,7 @@ const funcionarioController = new FuncionarioController()
 
 router.post('/cadastro/:id', funcionarioController.cadastrarFuncionarios)
 router.get('/:id', funcionarioController.getFuncionarios)
-router.get('/:id', funcionarioController.getFuncionario)
+router.get('/search/:id', funcionarioController.getFuncionario)
 router.delete('/:id', funcionarioController.excluirFuncionario)
 
 module.exports = router
