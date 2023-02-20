@@ -100,14 +100,12 @@ class EmpresaController {
       nomeFantasia: z.string(),
       email: z.string(),
       senha: z.string(),
-      qtdFuncionarios: z.number(),
     })
     
     let {
       nomeFantasia,
       email,
       senha,
-      qtdFuncionarios,
     } = createEmpresaBody.parse(req.body)
 
     const today = dayjs().startOf('day').toDate()
@@ -127,7 +125,6 @@ class EmpresaController {
             nomeFantasia: nomeFantasia,
             email: email,
             senha: senha,
-            qtdFuncionarios: qtdFuncionarios,
           }
         })
         res.status(200).json({ message: 'Empresa cadastrada com sucesso!' })

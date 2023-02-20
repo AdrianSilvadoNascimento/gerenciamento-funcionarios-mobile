@@ -8,11 +8,11 @@ generator client {
 }
 
 model Empresa {
-  id              String @id @default(auto()) @map("_id") @db.ObjectId
-  nomeFantasia    String @default("")
-  email           String @unique
-  senha           String
-  qtdFuncionarios Int    @default(1)
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  nomeFantasia String   @default("")
+  email        String   @unique
+  senha        String
+  criadoEm     DateTime @default(now())
 
   funcionarios Funcionario[]
 
@@ -31,5 +31,36 @@ model Funcionario {
   empresa   Empresa @relation(fields: [empresaId], references: [id])
   empresaId String  @db.ObjectId
 
+  diasTrabalhados   DiaTrabalhado[]
+  eventoFuncionario EventoFuncionario[]
+
   @@map("funcionarios")
+}
+
+model DiaTrabalhado {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  dia        DateTime @default(now())
+  horasNoDia Int      @default(0)
+
+  funcionario   Funcionario @relation(fields: [funcionarioId], references: [id])
+  funcionarioId String      @db.ObjectId
+
+  @@map("diasTrabalhados")
+}
+
+model EventoFuncionario {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  key         String    @default("")
+  dataInicio  DateTime  @default(now())
+  dataFinal   DateTime? @default(now())
+  selecionado Boolean   @default(false)
+  comecoDia   Boolean   @default(false)
+  finalDia    Boolean   @default(false)
+
+  funcionario   Funcionario @relation(fields: [funcionarioId], references: [id])
+  funcionarioId String      @db.ObjectId
+
+  @@map("eventosFuncionario")
 }
