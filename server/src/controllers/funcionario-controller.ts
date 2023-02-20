@@ -23,7 +23,7 @@ class FuncionarioController {
 
   private initializeRoutes() {
     this.router.get('/:id', this.getFuncionarios)
-    this.router.get('/:id', this.getFuncionario)
+    this.router.get('/search/:id', this.getFuncionario)
     this.router.post(this.path, this.cadastrarFuncionarios)
     this.router.delete('/:id', this.excluirFuncionario)
   }
@@ -33,6 +33,7 @@ class FuncionarioController {
 
     try {
       const id: string = req.params?.id
+      console.log('id:', id)
 
       const funcionario = await prisma.funcionario.findUnique({
         where: {
@@ -41,12 +42,7 @@ class FuncionarioController {
       })
 
       if (funcionario) {
-        const empresa = await prisma.empresa.findUnique({
-          where: {
-            id: funcionario?.empresaId
-          }
-        })
-        res.status(200).json({ empresa: empresa, funcionario: funcionario })
+        res.status(200).json(funcionario)
       } else {
         res.status(404).json({ message: 'Funcionário não encontrado!' })
       }
