@@ -5,8 +5,8 @@ import EmpresaController from './empresa-controller'
 
 type Funcionario = {
   nomeFuncionario: string
-  sobrenomeFuncinoario : string
-  posicaoFuncionario: string,
+  sobrenomeFuncionario : string
+  cargoFuncionario: string,
   turnoFuncionario: string,
   horaInicio: Date
   horaFinal: Date
@@ -103,8 +103,8 @@ class FuncionarioController {
       const { horaInicio, horaFinal } = getDayParam.parse(data)
       const funcionario: Funcionario = {
         nomeFuncionario: data.nomeFuncionario,
-        sobrenomeFuncinoario: data.sobrenomeFuncinoario,
-        posicaoFuncionario: data.posicaoFuncionario,
+        sobrenomeFuncionario: data.sobrenomeFuncionario,
+        cargoFuncionario: data.cargoFuncionario,
         turnoFuncionario: data.turnoFuncionario,
         horaInicio: horaInicio,
         horaFinal: horaFinal,
@@ -147,7 +147,7 @@ class FuncionarioController {
          data: {
            nomeFuncionario: data.nomeFuncionario,
            sobrenomeFuncionario: data.sobrenomeFuncionario,
-           posicaoFuncionario: data.posicaoFuncionario,
+           cargoFuncionario: data.cargoFuncionario,
            turnoFuncionario: data.turnoFuncionario,
            horaInicio: horaInicio,
            horaFinal: horaFinal,
@@ -188,18 +188,34 @@ class FuncionarioController {
         }
       })
 
+      const dias = await prisma.diaTrabalhado.findMany({
+        where: {
+          funcionarioId: funcionarioId
+        }
+      })
+
+      let canSave: boolean = false
+
+      if (dias) {
+        canSave = !dias.some(diaTrabalhado => diaTrabalhado.dia.getDate() === new Date().getDate())
+      }
+
       if (!funcionario) {
         res.status(404).json({ message: 'Funcionário não encontrado!' })
       } else {
-        await prisma.diaTrabalhado.create({
-          data: {
-            dia: new Date(),
-            funcionarioId: funcionarioId,
-            horasNoDia: horasTrabalhadas,
-          }
-        })
-
-        res.status(200).json({ message: 'Horas adicionadas com sucesso!' })
+        if (canSave) {
+          await prisma.diaTrabalhado.create({
+            data: {
+              dia: new Date(),
+              funcionarioId: funcionarioId,
+              horasNoDia: horasTrabalhadas,
+            }
+          })
+  
+          res.status(200).json({ message: 'Horas adicionadas com sucesso!' })
+        } else {
+          return res.status(401).json({ message: 'Horas já adicionada!' })
+        }
       }
       await prisma.$disconnect()
     } catch (error) {

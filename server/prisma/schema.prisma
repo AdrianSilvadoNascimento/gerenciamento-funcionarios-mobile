@@ -23,7 +23,7 @@ model Funcionario {
   id                   String    @id @default(auto()) @map("_id") @db.ObjectId
   nomeFuncionario      String    @default("")
   sobrenomeFuncionario String?   @default("")
-  posicaoFuncionario   String?   @default("")
+  cargoFuncionario     String?   @default("")
   turnoFuncionario     String?   @default("")
   horaInicio           DateTime? @default(now())
   horaFinal            DateTime? @default(now())
